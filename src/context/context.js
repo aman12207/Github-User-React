@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
 
 const rootUrl = 'https://api.github.com';
@@ -13,7 +13,7 @@ const GithubProvider = ({children}) =>{
   const [request,setRequest] = useState(0);
   const[error,setError] = useState({show:false, msg : ""});
 
-  const SearchGithubUser = async (term) =>{
+  const SearchGithubUser = useCallback( async (term) =>{
     setError({show:false,msg:""});
     setLoading(true);
     const response = await axios.get(`${rootUrl}/users/${term}`)
@@ -23,7 +23,7 @@ const GithubProvider = ({children}) =>{
     })
     if(response){
       setGithubUser(response.data);
-      const {login,followers_url,repos_url} = response.data;
+      const {followers_url,repos_url} = response.data;
       // we can do it that way too but here we fetch data from repos first and then from followers
       //fetching repos
     //   const res = await axios.get(`${repos_url}?per_page=100`)
@@ -49,7 +49,7 @@ const GithubProvider = ({children}) =>{
       .then((result)=>{
         const [repos,followers] = result;
         const status = "fulfilled";
-        console.log(repos,followers);
+        // console.log(repos,followers);
         if(repos.status === status){
           setRepo(repos.value.data);
           // console.log(repos.value.data);
@@ -65,7 +65,7 @@ const GithubProvider = ({children}) =>{
     
     CheckRequests();
     setLoading(false);
-  }
+  },[])
 
   const CheckRequests = () =>{
     axios.get(`${rootUrl}/rate_limit`).then(({data})=>{
@@ -85,7 +85,7 @@ const GithubProvider = ({children}) =>{
 
   useEffect(()=>{
     SearchGithubUser('Aman12207')
-  },[])
+  },[SearchGithubUser])
   
   return <GithubContext.Provider value={{loading, githubUser,repo,followers,request,error,SearchGithubUser}}>{children}</GithubContext.Provider>
 }

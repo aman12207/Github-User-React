@@ -7,8 +7,8 @@ const Followers = () => {
   return <Wrapper>
     <div className='followers'>
       {followers.map(({login,html_url,avatar_url}) =>{
-        return <article>
-          <img src={avatar_url}/>
+        return <article key={html_url}>
+          <img src={avatar_url} alt={login}/>
           <div>
             <h4>{login}</h4>
             <a href={html_url}>{html_url}</a>
