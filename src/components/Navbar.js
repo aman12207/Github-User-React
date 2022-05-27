@@ -3,7 +3,17 @@ import styled from 'styled-components';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const Navbar = () => {
-  return <h2>navbar component</h2>;
+  const {isAuthenticated,loginWithRedirect,logout,user} = useAuth0();
+  const isUser = isAuthenticated && user;
+  // console.log(user)
+    return <Wrapper>
+        {isUser && user.picture && <img src={user.picture} />}
+        {isUser && <h4>Welcome, <b>{user.name.toUpperCase()}</b></h4>}
+        {/* {!user ? <button onClick={()=>{loginWithRedirect()}}>Login</button>: */}
+        <button onClick={()=>{logout({returnTo : window.location.origin})}}>Logout</button>
+        {/* } */}
+    </Wrapper>
+
 };
 
 const Wrapper = styled.nav`
